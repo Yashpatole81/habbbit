@@ -1,18 +1,20 @@
 import { Colors } from '@/constants/Colors';
 import { CompletionLog } from '@/types';
-import { eachDayOfInterval, format } from 'date-fns';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { addMonths, eachDayOfInterval, format, subMonths } from 'date-fns';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface HeatmapGridProps {
     logs: CompletionLog[];
 }
 
 export const HeatmapGrid: React.FC<HeatmapGridProps> = ({ logs }) => {
-    const today = new Date();
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+
     const days = eachDayOfInterval({
-        start: new Date(today.getFullYear(), today.getMonth(), 1),
-        end: new Date(today.getFullYear(), today.getMonth() + 1, 0),
+        start: new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1),
+        end: new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0),
     });
 
     const getIntensity = (date: Date) => {
@@ -27,22 +29,57 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({ logs }) => {
     };
 
     const getColor = (count: number) => {
-        if (count === 0) return '#222';
+        if (count === 0) return '#444444'; // Grey for empty dates
         // Gradient from dark green to bright neon green
-        if (count === 1) return '#004422'; // Very dark green
-        if (count === 2) return '#006633'; // Dark green
-        if (count === 3) return '#008844'; // Medium green
-        if (count === 4) return '#00AA55'; // Light green
-        if (count === 5) return '#00CC66'; // Lighter green
+        if (count === 1) return '#004422';
+        if (count === 2) return '#006633';
+        if (count === 3) return '#008844';
+        if (count === 4) return '#00AA55';
+        if (count === 5) return '#00CC66';
         return Colors.primary; // #00FF88 (Brightest)
+    };
+
+    const goToPreviousMonth = () => {
+        setCurrentMonth(subMonths(currentMonth, 1));
+    };
+
+    const goToNextMonth = () => {
+        const today = new Date();
+        const nextMonth = addMonths(currentMonth, 1);
+        // Don't allow navigation to future months
+        if (nextMonth <= today) {
+            setCurrentMonth(nextMonth);
+        }
+    };
+
+    const isCurrentMonthOrPast = () => {
+        const today = new Date();
+        const nextMonth = addMonths(currentMonth, 1);
+        return nextMonth <= today;
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.monthLabel}>{format(today, 'MMMM yyyy')}</Text>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={goToPreviousMonth} style={styles.navButton}>
+                    <ChevronLeft size={20} color={Colors.text} />
+                </TouchableOpacity>
+                <Text style={styles.monthLabel}>{format(currentMonth, 'MMMM yyyy')}</Text>
+                <TouchableOpacity
+                    onPress={goToNextMonth}
+                    style={styles.navButton}
+                    disabled={!isCurrentMonthOrPast()}
+                >
+                    <ChevronRight
+                        size={20}
+                        color={isCurrentMonthOrPast() ? Colors.text : Colors.textMuted}
+                    />
+                </TouchableOpacity>
+            </View>
             <View style={styles.grid}>
                 {days.map((day, index) => {
                     const count = getIntensity(day);
+                    const dayNumber = format(day, 'd');
                     return (
                         <View
                             key={index}
@@ -50,7 +87,9 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({ logs }) => {
                                 styles.cell,
                                 { backgroundColor: getColor(count) },
                             ]}
-                        />
+                        >
+                            <Text style={styles.dayText}>{dayNumber}</Text>
+                        </View>
                     );
                 })}
             </View>
@@ -60,27 +99,41 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({ logs }) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
-        backgroundColor: Colors.surface,
-        borderRadius: 12,
         alignItems: 'center',
     },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginBottom: 16,
+    },
+    navButton: {
+        padding: 8,
+    },
     monthLabel: {
-        color: Colors.textSecondary,
-        fontSize: 14,
+        color: Colors.text,
+        fontSize: 16,
         fontWeight: '600',
-        marginBottom: 12,
     },
     grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 4,
+        gap: 6,
         justifyContent: 'center',
+        alignItems: 'center',
+        maxWidth: 350,
     },
     cell: {
-        width: 30,
-        height: 30,
-        borderRadius: 4,
-        margin: 2,
+        width: 40,
+        height: 40,
+        borderRadius: 6,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    dayText: {
+        color: '#666666', // Dark gray
+        fontSize: 12,
+        fontWeight: '600',
     },
 });

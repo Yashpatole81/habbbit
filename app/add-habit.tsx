@@ -10,8 +10,8 @@ export default function AddHabitScreen() {
     const router = useRouter();
     const { addHabit } = useHabits();
 
-    const handleSubmit = (name: string, frequency: 'daily' | 'weekly') => {
-        addHabit(name, frequency);
+    const handleSubmit = (name: string, description: string, color: string) => {
+        addHabit(name, description, color);
         router.back();
     };
 

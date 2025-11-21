@@ -30,11 +30,16 @@ export const HabitCard: React.FC<HabitCardProps> = ({
         >
             <View style={styles.content}>
                 <View style={styles.textContainer}>
-                    <Text style={[
-                        styles.title,
-                        isCompleted && styles.completedTitle
-                    ]}>{habit.name}</Text>
-                    <Text style={styles.frequency}>{habit.frequency}</Text>
+                    <View style={styles.titleRow}>
+                        <View style={[styles.colorDot, { backgroundColor: habit.color }]} />
+                        <Text style={[
+                            styles.title,
+                            isCompleted && styles.completedTitle
+                        ]}>{habit.name}</Text>
+                    </View>
+                    {habit.description ? (
+                        <Text style={styles.description} numberOfLines={2}>{habit.description}</Text>
+                    ) : null}
                 </View>
 
                 <View style={styles.actions}>
@@ -72,16 +77,26 @@ const styles = StyleSheet.create({
     textContainer: {
         flex: 1,
     },
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
+    colorDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        marginRight: 8,
+    },
     title: {
         color: Colors.text,
         fontSize: 18,
         fontWeight: '600',
-        marginBottom: 4,
+        flex: 1,
     },
-    frequency: {
+    description: {
         color: Colors.textMuted,
         fontSize: 12,
-        textTransform: 'capitalize',
     },
     actions: {
         marginLeft: 16,

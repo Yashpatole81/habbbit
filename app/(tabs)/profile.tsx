@@ -26,7 +26,7 @@ export default function ProfileScreen() {
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Achievements</Text>
                     <View style={styles.badgesGrid}>
-                        {badges.map((badge) => (
+                        {badges.map((badge: any) => (
                             <View
                                 key={badge.id}
                                 style={[
