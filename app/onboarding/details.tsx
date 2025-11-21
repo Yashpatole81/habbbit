@@ -3,7 +3,7 @@ import { Colors } from '@/constants/Colors';
 import { useUser } from '@/context/UserContext';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function UserDetails() {
@@ -52,13 +52,27 @@ export default function UserDetails() {
 
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>Gender</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter your gender"
-                            placeholderTextColor={Colors.textMuted}
-                            value={gender}
-                            onChangeText={setGender}
-                        />
+                        <View style={styles.genderContainer}>
+                            {['Male', 'Female'].map((option) => (
+                                <TouchableOpacity
+                                    key={option}
+                                    style={[
+                                        styles.genderButton,
+                                        gender === option && styles.genderButtonSelected,
+                                    ]}
+                                    onPress={() => setGender(option)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.genderButtonText,
+                                            gender === option && styles.genderButtonTextSelected,
+                                        ]}
+                                    >
+                                        {option}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
                     </View>
 
                     <View style={styles.inputGroup}>
@@ -129,5 +143,30 @@ const styles = StyleSheet.create({
     },
     footer: {
         paddingVertical: 20,
+    },
+    genderContainer: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    genderButton: {
+        flex: 1,
+        backgroundColor: Colors.surface,
+        padding: 16,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        alignItems: 'center',
+    },
+    genderButtonSelected: {
+        backgroundColor: Colors.primary,
+        borderColor: Colors.primary,
+    },
+    genderButtonText: {
+        fontSize: 16,
+        color: Colors.text,
+        fontWeight: '600',
+    },
+    genderButtonTextSelected: {
+        color: '#000', // Assuming primary color is bright, black text might look better. Or Colors.background if it's dark. Let's stick to black for contrast on bright green.
     },
 });

@@ -1,15 +1,17 @@
+import { ColorPicker } from '@/components/ColorPicker';
 import { Colors } from '@/constants/Colors';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { Button } from './Button';
 import { Input } from './Input';
 
 interface HabitFormProps {
     initialValues?: {
         name: string;
-        frequency: 'daily' | 'weekly';
+        description: string;
+        color: string;
     };
-    onSubmit: (name: string, frequency: 'daily' | 'weekly') => void;
+    onSubmit: (name: string, description: string, color: string) => void;
     onCancel: () => void;
     submitLabel?: string;
 }
@@ -21,11 +23,12 @@ export const HabitForm: React.FC<HabitFormProps> = ({
     submitLabel = 'Save',
 }) => {
     const [name, setName] = useState(initialValues?.name || '');
-    const [frequency, setFrequency] = useState<'daily' | 'weekly'>(initialValues?.frequency || 'daily');
+    const [description, setDescription] = useState(initialValues?.description || '');
+    const [color, setColor] = useState(initialValues?.color || '#00FF88');
 
     const handleSubmit = () => {
         if (name.trim()) {
-            onSubmit(name, frequency);
+            onSubmit(name, description, color);
         }
     };
 
@@ -38,21 +41,20 @@ export const HabitForm: React.FC<HabitFormProps> = ({
                 onChangeText={setName}
             />
 
-            <Text style={styles.label}>Frequency</Text>
-            <View style={styles.frequencyContainer}>
-                <TouchableOpacity
-                    style={[styles.option, frequency === 'daily' && styles.optionSelected]}
-                    onPress={() => setFrequency('daily')}
-                >
-                    <Text style={[styles.optionText, frequency === 'daily' && styles.optionTextSelected]}>Daily</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.option, frequency === 'weekly' && styles.optionSelected]}
-                    onPress={() => setFrequency('weekly')}
-                >
-                    <Text style={[styles.optionText, frequency === 'weekly' && styles.optionTextSelected]}>Weekly</Text>
-                </TouchableOpacity>
+            <View style={styles.inputGroup}>
+                <TextInput
+                    style={styles.descriptionInput}
+                    placeholder="Description (optional)"
+                    placeholderTextColor={Colors.textMuted}
+                    value={description}
+                    onChangeText={setDescription}
+                    multiline
+                    numberOfLines={3}
+                    textAlignVertical="top"
+                />
             </View>
+
+            <ColorPicker selectedColor={color} onColorSelect={setColor} />
 
             <View style={styles.actions}>
                 <Button title="Cancel" onPress={onCancel} variant="outline" />
@@ -67,36 +69,18 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
     },
-    label: {
-        color: Colors.textSecondary,
-        marginBottom: 8,
-        fontSize: 14,
+    inputGroup: {
+        marginBottom: 20,
     },
-    frequencyContainer: {
-        flexDirection: 'row',
-        marginBottom: 24,
-        gap: 12,
-    },
-    option: {
-        flex: 1,
-        height: 44,
-        borderRadius: 8,
+    descriptionInput: {
+        backgroundColor: Colors.surface,
+        borderRadius: 12,
+        padding: 16,
+        color: Colors.text,
+        fontSize: 16,
         borderWidth: 1,
         borderColor: Colors.border,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Colors.surface,
-    },
-    optionSelected: {
-        borderColor: Colors.primary,
-        backgroundColor: 'rgba(0, 255, 136, 0.1)',
-    },
-    optionText: {
-        color: Colors.textMuted,
-    },
-    optionTextSelected: {
-        color: Colors.primary,
-        fontWeight: '600',
+        minHeight: 80,
     },
     actions: {
         flexDirection: 'row',

@@ -1,4 +1,5 @@
 import { HeatmapGrid } from '@/components/HeatmapGrid';
+import { StatsCarousel } from '@/components/StatsCarousel';
 import { Colors } from '@/constants/Colors';
 import { useHabits } from '@/context/HabitContext';
 import React from 'react';
@@ -18,6 +19,8 @@ export default function StatsScreen() {
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.content}>
                 <Text style={styles.title}>Statistics</Text>
+
+                <StatsCarousel />
 
                 <View style={styles.card}>
                     <Text style={styles.cardTitle}>Monthly Achievement</Text>
