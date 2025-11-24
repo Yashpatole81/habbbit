@@ -6,6 +6,7 @@ import { Activity, Chrome as Home, User } from 'lucide-react-native';
 export default function TabLayout() {
   return (
     <Tabs
+      initialRouteName="home"
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
